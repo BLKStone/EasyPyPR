@@ -28,13 +28,6 @@ def verifySize(MinExteriRect):
 	ratio_min = aspect - aspect * error
 	ratio_max = aspect + aspect * error
 
-	# 调试模式
-	if m_debug:
-		print 'width',MinExteriRect[1][0]
-		print 'height',MinExteriRect[1][1]
-		print ratio_max
-		print ratio_min
-
 	# 高度为0的特殊情况，默认排除
 	if MinExteriRect[1][1] == 0:
 		return False
@@ -54,8 +47,8 @@ def verifySize(MinExteriRect):
 #resultMat = showResultMat(img_rotated, rect_size, minRect.center, k++);
 def showResultMat(imgRotated,rect_size,center,index):
 	global m_debug
-	m_width = 150
-	m_height = 50
+	m_width = 136
+	m_height = 36
 
 	imgCorp = cv2.getRectSubPix(imgRotated,rect_size,center)
 
@@ -77,7 +70,9 @@ def showResultMat(imgRotated,rect_size,center,index):
 def fuzzyLocate(imgPlate):
 	global m_debug
 	
+	# 高斯模糊 patch size
 	m_blurBlock = 5
+	# sobel算子 直径
 	m_SobelSize = 3
 
 	# 读取图片
