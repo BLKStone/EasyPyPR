@@ -116,8 +116,8 @@ def fuzzyLocate(imgPlate):
 		cv2.imwrite('debug/closing.png',closing)
 
 	# 求轮廓操作
+	# closing, contours, hierarchy = cv2.findContours(closing,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 	closing, contours, hierarchy = cv2.findContours(closing,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-
 	# debug 模式，将轮廓绘制出来
 	if m_debug:
 		imgContours = cv2.drawContours(imgSrc, contours, -1, (0,255,0), 2)
@@ -133,7 +133,8 @@ def fuzzyLocate(imgPlate):
 		if not verifySize(mr):
 			pass
 		else:
-			box = cv2.boxPoints(mr)
+			box = cv2.boxPoints(mr)  # if you are use opencv 3.0.0
+			# box = cv2.cv.boxPoints(mr) # if your are using opencv 2.4.11
 			box = np.int0(box)
 			rotate_rects.append(mr)
 			box_rects.append(box)

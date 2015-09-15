@@ -2,6 +2,8 @@
 
 import numpy as np
 import cv2
+from sklearn import svm
+
 import PlateLocater
 
 global m_debug
@@ -27,8 +29,12 @@ def histeq(inMat):
 def getHistogramFeatures(img):
 	# 灰度化
 	imgGray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+	#print '灰度化成功',imgGray.shape
+	
 	# 大津算法 二值化
 	retval,imgThres = cv2.threshold(imgGray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+	#print '二值化成功',imgThres.shape
+
 	# 获取 水平投影，垂直投影 的特征
 	features = getProjectFeatures(imgThres)
 
@@ -42,21 +48,23 @@ def countOfBigValue(oneLine,project_type,threshold):
 
 	if project_type == 0:
 		# vertical
-		for line in oneLine:
-			for pixel in line:
-				if pixel > threshold:
-					count = count + 1
+		for pixel in oneLine:
+			if pixel > threshold:
+				count +=  1
 	else:
 		# horizontal
 		for pixel in oneLine:
 			if pixel > threshold:
-				count = count + 1
+				count += 1
 	
 	return count
 
 
-# 获取垂直和水平方向直方图
+# 获取垂直和水平方向投影图
 def ProjectedHistogram(img,project_type):
+
+	threshold = 20
+	mhist = np.zeros((1,size))
 
 	if project_type == 0:
 		# vertical
@@ -65,19 +73,19 @@ def ProjectedHistogram(img,project_type):
 		# horizontal
 		size = img.shape[0]
 
-	mhist = np.zeros((1,size))
-	threshold = 20
 
 	for i in range(0,size):
 		if project_type == 0:
 			# vertical
 			oneLine = img[:,i]
+			#print '方向',project_type,'一行的状态',oneLine.shape
 
 			mhist[0,i] = countOfBigValue(oneLine,project_type,threshold)
 
 		else:
 			# horizontal
 			oneLine = img[i,:]
+			#print '方向',project_type,'一行的状态',oneLine.shape
 
 			mhist[0,i] = countOfBigValue(oneLine,project_type,threshold)
 
@@ -98,6 +106,8 @@ def ProjectedHistogram(img,project_type):
 # inMat 2维矩阵 只有 0与255
 def getProjectFeatures(inMat):
 
+	#print '开始获取投影特征',inMat.shape
+
 	VERTICAL = 0
 	HORIZONTAL = 1 
 
@@ -105,13 +115,17 @@ def getProjectFeatures(inMat):
 	hhist = ProjectedHistogram(inMat, HORIZONTAL)
 
 	numCols = vhist.shape[1] + hhist.shape[1]
+	outMat = np.zeros((1, numCols))
 
-	outMat = np.zeros((1, numCols));
+	# print 'vertical',vhist.shape,vhist.shape[1]
+	# print 'horizontal',hhist.shape
+	# print 'outMat',outMat.shape
+
 	index = 0
 	for i in range(0,vhist.shape[1]):
 		outMat[0,index] = vhist[0,i]
 		index = index + 1
-	for i in range(0,vhist.shape[1]):
+	for i in range(0,hhist.shape[1]):
 		outMat[0,index] = hhist[0,i]
 		index = index + 1
 
@@ -137,50 +151,55 @@ def platesJudge(inMats):
 
 # 对单幅图像进行SVM判断
 def plateJudge(inMat):
-
-	svm = cv2.SVM()
-	svm.load('model/svm.xml')
-
-	m_getFeatures = getProjectFeatures
+	
+	m_getFeatures = getHistogramFeatures
 
 	# 获取特征
 	features = m_getFeatures(inMat)
+	
+	print '进入plateJudge'
+	print type(features)
+	print features.shape
 	# 使用 svm 预测
-	response = svm.predict(features)
-	response = int(response)
-	print 'debug',response
+	
+	response = []
 
 	return response
 
 
 
+def main():
+	# version 3.0.0
+	# version 2.4.11
+	print cv2.__version__
 
-# 
-imgPlate = cv2.imread('plate_judge.jpg',cv2.IMREAD_COLOR)
+	imgPlate = cv2.imread('plate_judge.jpg',cv2.IMREAD_COLOR)
 
-PlateLocater.m_debug = False
-Result = PlateLocater.fuzzyLocate(imgPlate)
+	PlateLocater.m_debug = False
+	Result = PlateLocater.fuzzyLocate(imgPlate)
 
-print cv2.__version__
-platesJudge(Result)
+	print type(Result)
+	print '候选车牌数量：',len(Result)
+	print Result[0].shape
 
+	platesJudge(Result)
 
-
-
-
-
-# imgGray = cv2.cvtColor(imgPlate,cv2.COLOR_BGR2GRAY)
-# cv2.imshow('src',imgGray)
-# imgEqulhist = cv2.equalizeHist(imgGray)
-# cv2.imshow('equal',imgEqulhist)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+	# imgGray = cv2.cvtColor(imgPlate,cv2.COLOR_BGR2GRAY)
+	# cv2.imshow('src',imgGray)
+	# imgEqulhist = cv2.equalizeHist(imgGray)
+	# cv2.imshow('equal',imgEqulhist)
+	cv2.waitKey(0)
+	cv2.destroyAllWindows()
 
 
+	# box = cv2.boxPoints(mr)  # if you are use opencv 3.0.0
+	# box = cv2.cv.boxPoints(mr) # if your are using opencv 2.4.11
 
-# svm 参考
-# http://answers.opencv.org/question/5713/save-svm-in-python/
-#
+	# svm 参考
+	# http://answers.opencv.org/question/5713/save-svm-in-python/
+	#
 
-# 遇到的问题
-# http://answers.opencv.org/question/55152/unable-to-find-knearest-and-svm-functions-in-cv2/
+	# 遇到的问题
+	# http://answers.opencv.org/question/55152/unable-to-find-knearest-and-svm-functions-in-cv2/
+
+	return None
