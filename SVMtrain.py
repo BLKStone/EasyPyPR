@@ -103,7 +103,7 @@ def dataPreProcess():
 def KFolderCrossValidation():
 
 	clf = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.1, degree=0.1, gamma=1.0,
-  kernel='rbf', max_iter=-1, probability=False, random_state=None,
+  kernel='linear', max_iter=-1, probability=False, random_state=None,
   shrinking=True, tol=0.001, verbose=True)
 
 	# K折

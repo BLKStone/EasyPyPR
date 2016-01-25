@@ -5,6 +5,7 @@ import cv2
 from sklearn import svm
 
 import PlateLocater
+from sklearn.externals import joblib
 
 global m_debug
 m_debug = False
@@ -64,7 +65,7 @@ def countOfBigValue(oneLine,project_type,threshold):
 def ProjectedHistogram(img,project_type):
 
 	threshold = 20
-	mhist = np.zeros((1,size))
+	
 
 	if project_type == 0:
 		# vertical
@@ -72,6 +73,8 @@ def ProjectedHistogram(img,project_type):
 	else:
 		# horizontal
 		size = img.shape[0]
+
+	mhist = np.zeros((1,size))
 
 
 	for i in range(0,size):
@@ -157,17 +160,19 @@ def plateJudge(inMat):
 	# 获取特征
 	features = m_getFeatures(inMat)
 	
-	print '进入plateJudge'
-	print type(features)
-	print features.shape
+	# print '进入plateJudge'
+	# print type(features)
+	# print features.shape
 	# 使用 svm 预测
-	
-	response = []
+	clf = joblib.load('model/svm4.pkl')
+	response = clf.predict(features) 
 
 	return response
 
 
 
+# 测试代码
+# 待移除
 def main():
 	# version 3.0.0
 	# version 2.4.11
