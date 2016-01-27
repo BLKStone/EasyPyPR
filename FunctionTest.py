@@ -53,12 +53,12 @@ def testCharsSegment():
     imgPlate = cv2.imread("resources/image/chars_segment.jpg",cv2.IMREAD_COLOR)
     cv2.imshow("test",imgPlate)
 
-    print cv2.countNonZero(imgPlate[:,:,0])
-    print imgPlate.shape[0],imgPlate.shape[1],imgPlate.shape[1]*imgPlate.shape[0]
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # print cv2.countNonZero(imgPlate[:,:,0])
+    # print imgPlate.shape[0],imgPlate.shape[1],imgPlate.shape[1]*imgPlate.shape[0]
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
-    # segmented = CharsSegmenter.charsSegment(imgPlate)
+    segmented = CharsSegmenter.charsSegment(imgPlate)
 
     # index_char = 0
     # for char in segmented:
