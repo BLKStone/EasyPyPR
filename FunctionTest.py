@@ -60,12 +60,12 @@ def testCharsSegment():
 
     segmented = CharsSegmenter.charsSegment(imgPlate)
 
-    # index_char = 0
-    # for char in segmented:
-    #     index_char += 1
-    #     cv2.imshow("chars_segment"+str(index_char), char)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    index_char = 0
+    for char in segmented:
+        index_char += 1
+        cv2.imshow("chars_segment"+str(index_char), char)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 
