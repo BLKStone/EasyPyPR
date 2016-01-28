@@ -7,9 +7,12 @@ import os
 import PlateLocater
 import PlateJudger
 import CharsSegmenter
+import CharsIndentifier
+
+kPredictSize = 10
 
 # 测试车牌定位 和 车牌判别
-def testPlateLocater():
+def test_plate_locate():
     PlateLocater.m_debug = False
     rootdir = "resource/easy_test"
     for parent,dirnames,filenames in os.walk(rootdir):
@@ -42,23 +45,22 @@ def testPlateLocater():
                 cv2.waitKey(0)
 
 
-
                 if index_file >20:
                      break
 
 # 测试字符分割
 # chars_segment.cpp 79L
-def testCharsSegment():
+def test_chars_segment():
     print "test_chars_segment"
-    imgPlate = cv2.imread("resources/image/chars_segment.jpg",cv2.IMREAD_COLOR)
-    cv2.imshow("test",imgPlate)
+    img_plate = cv2.imread("resources/image/chars_segment.jpg",cv2.IMREAD_COLOR)
+    cv2.imshow("test",img_plate)
 
-    # print cv2.countNonZero(imgPlate[:,:,0])
-    # print imgPlate.shape[0],imgPlate.shape[1],imgPlate.shape[1]*imgPlate.shape[0]
+    # print cv2.countNonZero(img_plate[:,:,0])
+    # print img_plate.shape[0],img_plate.shape[1],img_plate.shape[1]*img_plate.shape[0]
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
-    segmented = CharsSegmenter.charsSegment(imgPlate)
+    segmented = CharsSegmenter.charsSegment(img_plate)
 
     index_char = 0
     for char in segmented:
@@ -68,7 +70,24 @@ def testCharsSegment():
     cv2.destroyAllWindows()
 
 
+# 测试字符识别
+# chars.hpp 30L
+def test_chars_identify():
+    print "test_chars_identify"
+    img_plate = cv2.imread("resources/image/chars_identify.jpg",cv2.IMREAD_COLOR)
+
+    # 车牌分割
+    segmented = CharsSegmenter.charsSegment(img_plate)
+    licence = ''
+    for char in segmented:
+        print char
+        # licence += CharsIndentifier.identify(char)
+        CharsIndentifier.features(char,kPredictSize)
+    print "识别结果"
+    print licence
+
 
 if __name__ == '__main__':
-    # testPlateLocater()
-    testCharsSegment()
+    # test_plate_locate()
+    # test_chars_segment()
+    test_chars_identify()
