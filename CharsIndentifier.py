@@ -31,6 +31,7 @@ def features(inMat, sizeData):
 
     # print vhist.shape
     # print hhist.shape
+    # print low_data
 
     numCols = vhist.shape[1] + hhist.shape[1] + low_data.shape[0] * low_data.shape[1]
     outMat = np.zeros((1, numCols))

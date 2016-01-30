@@ -372,6 +372,7 @@ def charsSegment(inMat):
     plate_contours = plate_threshold.copy()
     plate_contours, contours, hierarchy = cv2.findContours(plate_contours,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
 
+    #print 'plate',plate_threshold[1:20,1:20]
 
     # 遍历获取的轮廓
     rects = []

@@ -80,6 +80,7 @@ def test_chars_identify():
     segmented = CharsSegmenter.charsSegment(img_plate)
     licence = ''
     for char in segmented:
+        print 'char:'
         print char
         # licence += CharsIndentifier.identify(char)
         CharsIndentifier.features(char,kPredictSize)
