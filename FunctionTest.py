@@ -14,10 +14,12 @@ kPredictSize = 10
 # 测试车牌定位 和 车牌判别
 def test_plate_locate():
     PlateLocater.m_debug = False
-    rootdir = "resource/easy_test"
-    for parent,dirnames,filenames in os.walk(rootdir):
-        
+    rootdir = "resources/easy_test"
+    print 'test_plate_locate'
+
+    for parent,dirnames,filenames in os.walk(rootdir):        
         index_file = 0
+        print filenames        
         for filename in filenames:
                 cv2.destroyAllWindows()
                 index_file += 1
@@ -87,8 +89,16 @@ def test_chars_identify():
     print "识别结果"
     print licence
 
+def test_ann_train():
+    print 'test_ann_train'
+    import ANNtrain
+    # ANNtrain.data_preprocess()
+    ANNtrain.train_model()
+
+
 
 if __name__ == '__main__':
     # test_plate_locate()
     # test_chars_segment()
-    test_chars_identify()
+    # test_chars_identify()
+    test_ann_train()
