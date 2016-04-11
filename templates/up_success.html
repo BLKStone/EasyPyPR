@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <title>上传成功</title>
+</head>
+<body>
+<h1>上传成功!</h1>
+<script type="text/javascript">     
+function countDown(secs,surl){     
+ //alert(surl);     
+ var jumpTo = document.getElementById('jumpTo');
+ jumpTo.innerHTML=secs;  
+ if(--secs>0){     
+     setTimeout("countDown("+secs+",'"+surl+"')",1000);     
+     }     
+ else{       
+     location.href=surl;     
+     }     
+ }     
+</script> 
+<span id="jumpTo">3</span>秒后自动跳转到<a href="http://127.0.0.1:5000/result">搜索结果</a>
+<script type="text/javascript">countDown(3,'../search');</script>  
+</body>
+</html>

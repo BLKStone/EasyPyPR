@@ -7,17 +7,25 @@ import PlateJudger
 import CharsSegmenter
 import CharsIndentifier
 
+import DarkChannelRecover
+
 global m_debug
 m_debug = True
 
 def plateRecognize(inMat):
     PlateLocater.m_debug = False
     CharsIndentifier.m_debug = False
-    
+
     Result = PlateLocater.fuzzyLocate(inMat)
 
     if m_debug:
         print '候选车牌数量：',len(Result)
+        index_loc = 0
+        for img in Result:
+            index_loc += 1
+            cv2.imshow("候选车牌"+str(index_loc),img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     resultVec = PlateJudger.platesJudge(Result)
     
@@ -27,7 +35,7 @@ def plateRecognize(inMat):
         index_loc = 0
         for img in resultVec:
             index_loc += 1
-            # cv2.imshow("SVM-"+str(index_loc),img)
+            cv2.imshow("SVM-"+str(index_loc),img)
             cv2.imwrite("debug/SVM-"+str(index_loc)+".jpg", img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
@@ -52,10 +60,10 @@ def plateRecognize(inMat):
 
 
 if __name__ == '__main__':
-    file_path = 'resources/image/test_plate.jpg'
+    file_path = 'resources/image/test_plate_foggy_1.jpg'
     imgPlate = cv2.imread(file_path, cv2.IMREAD_COLOR)
-    print type(imgPlate)
-    plateRecognize(imgPlate)
+    imgPlateDefog = DarkChannelRecover.getRecoverScene(imgPlate)
+    plateRecognize(imgPlateDefog)
 
 
 
