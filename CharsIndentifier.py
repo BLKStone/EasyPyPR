@@ -156,7 +156,22 @@ def identifyDigitLetter(inMat):
     # the data type must be consistent
     feature = inMat.astype(np.float32)
     output = digit_letter_model.predict(feature)
-    print output
     return ANNtrain.digit_letter_mapping.get(output[0],('x','x'))[1]
 
 
+def identifyPlate(segmented_chars):
+
+    licence = ''
+    initModel()
+    for index, char in enumerate(segmented_chars):
+        # print 'char:'
+        # print char
+        # licence += CharsIndentifier.identify(char)
+        char_feature = features(char,kPredictSize)
+        if index == 0:
+            char_text = identifyChinese(char_feature)
+        else:
+            char_text = identifyDigitLetter(char_feature)
+        licence += char_text
+
+    return licence

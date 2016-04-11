@@ -8,7 +8,7 @@ import PlateLocater
 from sklearn.externals import joblib
 
 global m_debug
-m_debug = False
+m_debug = True
 
 # 直方图均衡
 def histeq(inMat):

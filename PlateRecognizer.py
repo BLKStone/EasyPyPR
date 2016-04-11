@@ -3,43 +3,59 @@
 import numpy as np
 import cv2
 import PlateLocater
+import PlateJudger
+import CharsSegmenter
+import CharsIndentifier
 
 global m_debug
-m_debug = False
+m_debug = True
 
-# 直方图均衡
-def histeq(inMat):
-	rows,cols,channels = inMat.shape
+def plateRecognize(inMat):
+    PlateLocater.m_debug = False
+    CharsIndentifier.m_debug = False
+    
+    Result = PlateLocater.fuzzyLocate(inMat)
 
-	if channels == 3:
-		hsv = cv2.cvtColor(res,cv2.COLOR_BGR2HSV)
-		h,s,v = cv2.split(hsv)
-		v_equalHist = cv2.equalizeHist(v)
-		hsv = cv2.merge((h,s,v_equalHist))
-		outMat = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
+    if m_debug:
+        print '候选车牌数量：',len(Result)
 
-	if channels == 1:
-		outMat = cv2.equalizeHist(inMat)
+    resultVec = PlateJudger.platesJudge(Result)
+    
 
-	return outMat
+    if m_debug:
+        print 'SVM筛选后的车牌数量：',len(resultVec)
+        index_loc = 0
+        for img in resultVec:
+            index_loc += 1
+            # cv2.imshow("SVM-"+str(index_loc),img)
+            cv2.imwrite("debug/SVM-"+str(index_loc)+".jpg", img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+    lisences = list()
+    for img_plate in resultVec:
+        segmented = CharsSegmenter.charsSegment(img_plate)
+
+        if m_debug:
+            index_char = 0
+            for char in segmented:
+                index_char += 1
+                cv2.imshow("chars_segment"+str(index_char), char)
+                cv2.imwrite("debug/segmented-"+str(index_char)+".jpg", char)
+
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+        lisence = CharsIndentifier.identifyPlate(segmented)
+        print lisence
+        lisences.append(lisence)
 
 
-imgPlate = cv2.imread('plate_judge.jpg',cv2.IMREAD_COLOR)
-
-PlateLocater.m_debug = False
-Result = PlateLocater.fuzzyLocate(imgPlate)
-
-res = Result[0]
-
+if __name__ == '__main__':
+    file_path = 'resources/image/test_plate.jpg'
+    imgPlate = cv2.imread(file_path, cv2.IMREAD_COLOR)
+    print type(imgPlate)
+    plateRecognize(imgPlate)
 
 
-
-
-
-# imgGray = cv2.cvtColor(imgPlate,cv2.COLOR_BGR2GRAY)
-# cv2.imshow('src',imgGray)
-# imgEqulhist = cv2.equalizeHist(imgGray)
-# cv2.imshow('equal',imgEqulhist)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
 
