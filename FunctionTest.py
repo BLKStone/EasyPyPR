@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 from sklearn import svm
 import os
+
 import PlateLocater
 import PlateJudger
 import CharsSegmenter
@@ -81,24 +82,40 @@ def test_chars_identify():
     # 车牌分割
     segmented = CharsSegmenter.charsSegment(img_plate)
     licence = ''
-    for char in segmented:
+    CharsIndentifier.initModel()
+    for index, char in enumerate(segmented):
         print 'char:'
         print char
         # licence += CharsIndentifier.identify(char)
-        CharsIndentifier.features(char,kPredictSize)
-    print "识别结果"
+        char_feature = CharsIndentifier.features(char,kPredictSize)
+        if index == 0:
+            char_text = CharsIndentifier.identifyChinese(char_feature)
+        else:
+            char_text = CharsIndentifier.identifyDigitLetter(char_feature)
+        licence += char_text
+
+
+    print "识别结果:"
     print licence
 
 def test_ann_train():
     print 'test_ann_train'
     import ANNtrain
-    # ANNtrain.data_preprocess()
-    ANNtrain.train_model()
+    ANNtrain.chinese_data_preprocess()
+    ANNtrain.train_chinese_model()
+
+def test_digit_letter_train():
+    print 'test_digit_letter_train'
+    import ANNtrain
+    ANNtrain.digit_letter_data_preprocess()
+    ANNtrain.train_digit_letter_model()
+
 
 
 
 if __name__ == '__main__':
     # test_plate_locate()
     # test_chars_segment()
-    # test_chars_identify()
-    test_ann_train()
+    # test_ann_train()
+    # test_digit_letter_train()
+    test_chars_identify()

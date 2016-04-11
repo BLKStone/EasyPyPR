@@ -4,9 +4,12 @@ import numpy as np
 import cv2
 
 import PlateJudger
+import ANNtrain
 
 
+global m_debug
 m_debug = True
+
 kPredictSize = 10
 
 
@@ -129,8 +132,31 @@ def getCenterRect(inMat):
 
 
 
+def initModel():
+    global chinese_model 
+    global digit_letter_model 
 
-def identify():
-    pass
+    i = 122
+    data_path = '../goodmodel/ann_digit_letter_train_data_'+str(i)
+    label_path = '../goodmodel/ann_digit_letter_train_label_'+str(i)
+
+    chinese_model = ANNtrain.train_chinese_model()
+    digit_letter_model = ANNtrain.train_digit_letter_model(data_path, label_path)
+
+def identifyChinese(inMat):
+    
+    # the data type must be consistent
+    feature = inMat.astype(np.float32)
+    output = chinese_model.predict(feature)
+    return ANNtrain.province_mapping.get(output[0],('x','x'))[1]
+    
+
+def identifyDigitLetter(inMat):
+
+    # the data type must be consistent
+    feature = inMat.astype(np.float32)
+    output = digit_letter_model.predict(feature)
+    print output
+    return ANNtrain.digit_letter_mapping.get(output[0],('x','x'))[1]
 
 
