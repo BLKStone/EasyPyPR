@@ -7,6 +7,13 @@ from flask import send_from_directory
 from flask import session
 from werkzeug import secure_filename
 
+import PlateRecognizer
+import DarkChannelRecover
+import cv2
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 app = Flask(__name__)
 
@@ -19,7 +26,65 @@ def home_page():
 
 @app.route('/error')
 def error_page():
-    return render_template('error.html')
+    error_message = session.get('error_message','')
+    return render_template('error.html',error_message = error_message)
+
+
+@app.route('/search', methods=['POST', 'GET'])
+def search_page():
+    if request.method == 'POST':
+        print request.form
+        print request.form['wd']
+        # 获取请求关键词
+        keyword = request.form['wd']
+    # 如果请求访求是 GET 或验证未通过就会执行下面的代码
+
+    if request.method == 'GET':
+
+        # 获取图片路径 
+        image_url = session.get('filepath', '')
+
+        if session['filepath'] == '': 
+            session['error_message'] = "未获取到图片"
+            return redirect(url_for('error_page'))
+
+        
+        print "图片路径", image_url
+        try: 
+            # 初始化图像特征描述符
+        
+            imgPlate = cv2.imread(image_url, cv2.IMREAD_COLOR)
+            # imgPlateDefog = DarkChannelRecover.getRecoverScene(imgPlate)
+            PlateRecognizer.m_debug = False
+            licenses = PlateRecognizer.plateRecognize(imgPlate)
+            
+            print licenses,'test'
+            session['licenses'] = licenses
+ 
+        except:
+            session['error_message'] = "calculate error"
+            redirect(url_for('error_page'))
+
+    return redirect(url_for('result_page'))
+
+@app.route('/result')
+def result_page():
+
+    # 获取最近上传的图像名称
+    img_name = session.get('filepath','')
+    if img_name == '':
+        session['error_message'] = "未获取到计算结果"
+        return redirect(url_for('error_page'))
+
+    img_name = session['filepath'].split('/')[-1]
+
+    # 获取检索结果
+    licenses = session.get('licenses','')
+    if licenses == '':
+        session['error_message'] = "未获取到计算结果"
+        return redirect(url_for('error_page'))
+
+    return render_template('result.html', img_name = img_name, licenses = licenses)
 
 def allowed_file(filename):
     return '.' in filename and \

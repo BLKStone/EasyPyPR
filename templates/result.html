@@ -95,20 +95,12 @@
 </div>
 
 
-{% for result in results %}
+{% for license in licenses %}
 <!--这是一个搜索结果-->
 <div class="result-container" tpl="se_com_default" data-click="{&quot;rsv_bdr&quot;:&quot;0&quot;,&quot;rsv_cd&quot;:&quot;vLevel:2&quot;,&quot;p5&quot;:5}">
 
-    <h2> No.{{ loop.index }} : {{ result['image'] }}</h2>
-
-    <div class="general_image_pic">
-        <a class="c-img" href="http://127.0.0.1:5000/" target="_blank">
-        <img class="show-img" src="{{ url_for('static',filename = "dataset/" + result['image']) }}">
-        <img class="show-img-2" src="{{ url_for('uploaded_file',filename = img_name) }}">
-        </a>
-        
-    </div>
-    <div><h3>误差指数:</h3>{{ result['score'] }} </div>
+    
+    <div><h3>{{ license }}</h3></div>
 </div>
 {% endfor %}
 

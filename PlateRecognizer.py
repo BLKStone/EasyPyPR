@@ -55,15 +55,18 @@ def plateRecognize(inMat):
             cv2.destroyAllWindows()
 
         lisence = CharsIndentifier.identifyPlate(segmented)
-        print lisence
+        # print lisence
         lisences.append(lisence)
+
+    return lisences
 
 
 if __name__ == '__main__':
     file_path = 'resources/image/test_plate_foggy_1.jpg'
     imgPlate = cv2.imread(file_path, cv2.IMREAD_COLOR)
     imgPlateDefog = DarkChannelRecover.getRecoverScene(imgPlate)
-    plateRecognize(imgPlateDefog)
+    lisences = plateRecognize(imgPlateDefog)
+
 
 
 

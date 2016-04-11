@@ -6,6 +6,9 @@
 </head>
 <body>
 <h1>发生错误!</h1>
+{% if error_message %}
+<p> {{ error_message }} </p>
+{% endif %}
 <script type="text/javascript">     
 function countDown(secs,surl){     
  //alert(surl);     
